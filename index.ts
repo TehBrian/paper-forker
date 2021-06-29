@@ -79,13 +79,60 @@ class GameData {
     }
 }
 
-var gameData: GameData;
+namespace Game {
+    export var data: GameData;
+    const itemName: string = "paperForkerSave";
 
-function newGame() {
-    localStorage.removeItem("paperForkerSave");
-    gameData = new GameData(0, 0, 0, 0, 0);
-    saveGame();
-    console.log("Started up a new game!");
+    /**
+     * Sets all GameData back to the game's starting point.
+     */
+    export function reset(): void {
+        localStorage.removeItem(itemName);
+        data = new GameData(0, 0, 0, 0, 0);
+        save();
+        console.log("Started up a new game!");
+    }
+
+    /**
+     * Saves the GameData to local storage.
+     */
+    export function save(): void {
+        localStorage.setItem(itemName, JSON.stringify(data));
+        console.log("Saved GameData to local storage.")
+    }
+
+    /**
+     * Loads the GameData from local storage.
+     * @returns whether there was an available save
+     */
+    export function load(): boolean {
+        var json: any = JSON.parse(localStorage.getItem(itemName));
+        if (json !== null) {
+            var gameSave = new GameData(
+                json.linesOfCode,
+                json.forksCompleted,
+                json.developerSkillLevel,
+                json.developerFriends,
+                json.friendUpgrades
+            );
+
+            data = gameSave;
+            console.log("Successfully loaded GameData from local storage.");
+            return true;
+        } else {
+            console.log("Found no GameData in local storage.");
+            return false;
+        }
+    }
+
+    /**
+     * Tries to load the GameData from local storage, but if unavailable, resets the GameData to default state.
+     */
+    export function loadOrReset(): void {
+        if (!load()) {
+            reset();
+        }
+    }
 }
 
 function forkPaper() {}
@@ -161,34 +208,10 @@ function updateDisplays() {
         " LoC";
 }
 
-function saveGame() {
-    localStorage.setItem("paperForkerSave", JSON.stringify(gameData));
-}
-
-function loadGame() {
-    var json: any = JSON.parse(localStorage.getItem("paperForkerSave"));
-    if (json !== null) {
-        var gameSave = new GameData(
-            json.linesOfCode,
-            json.forksCompleted,
-            json.developerSkillLevel,
-            json.developerFriends,
-            json.friendUpgrades
-        );
-
-        gameData = gameSave;
-        return true;
-    } else {
-        return false;
-    }
-}
-
 function onLoad() {
-    if (!loadGame()) {
-        newGame();
-    }
+   Game.loadOrReset();
 
-    window.setInterval(saveGame, 2000);
+    window.setInterval(Game.save, 1000);
     window.setInterval(gameLoop, 1000);
 
     Elements.forkPaperButton.addEventListener("click", forkPaper);
