@@ -73,7 +73,9 @@ class GameData {
     }
 
     calculateLinesOfCodePerSecond(): number {
-        return Math.floor(((gameData.friendUpgrades + 1) ** 1.5) * gameData.developerFriends);
+        return Math.floor(
+            (this.friendUpgrades + 1) ** 1.5 * this.developerFriends
+        );
     }
 }
 
