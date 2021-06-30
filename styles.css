@@ -1,0 +1,52 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+p,
+h1,
+button,
+h3 {
+    margin: 10px;
+}
+
+#code-area {
+    background-color: black;
+    color: lime;
+
+    /* Scrollable <span>s!? What is this wizardry? */
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    margin: 30px 0px;
+    padding: 30px;
+
+    height: 250px;
+    max-height: 250px;
+    width: 100%;
+    max-width: 100%;
+}
+
+#code {
+    /* Don't mishmash the whitespace */
+    white-space: pre;
+}
+
+#loading-screen {
+    background-color: white;
+
+    height: 100%;
+    width: 100%;
+
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+
+#loading-text {
+    text-align: center;
+    font-size: 500%;
+}
