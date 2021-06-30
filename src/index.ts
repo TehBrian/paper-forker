@@ -41,12 +41,6 @@ namespace Elements {
     export const cursor = getById("cursor");
 }
 
-namespace Constants {
-    export const upgradeDeveloperSkillLevelBaseCost: number = 10;
-    export const getDeveloperFriendBaseCost: number = 300;
-    export const upgradeFriendsBaseCost: number = 650;
-}
-
 class GameData {
     linesOfCode: number;
     forks: number;
@@ -69,24 +63,15 @@ class GameData {
     }
 
     calculateUpgradeDeveloperSkillLevelCost(): number {
-        return (
-            Constants.upgradeDeveloperSkillLevelBaseCost +
-            Math.floor(this.developerSkillLevel ** 2)
-        );
+        return 10 + Math.floor(this.developerSkillLevel ** 2);
     }
 
     calculateGetDeveloperFriendCost(): number {
-        return (
-            Constants.getDeveloperFriendBaseCost +
-            Math.floor(this.developerFriends ** 2.5)
-        );
+        return 300 + Math.floor(this.developerFriends ** 2.5);
     }
 
     calculateUpgradeFriendsCost(): number {
-        return (
-            Constants.upgradeFriendsBaseCost +
-            Math.floor(this.friendUpgrades ** 3)
-        );
+        return 650 + Math.floor(this.friendUpgrades ** 3);
     }
 
     calculateFriendCodePerSecond(): number {
@@ -97,6 +82,13 @@ class GameData {
 
     calculateForkPaperRequirement(): number {
         return 10000;
+    }
+
+    canForkPaper(): boolean {
+        if (this.forks === 0) {
+            return true;
+        }
+        return this.linesOfCode >= this.calculateForkPaperRequirement();
     }
 }
 
@@ -112,8 +104,8 @@ namespace Game {
         data = new GameData(0, 0, 0, 0, 0);
         save();
         console.log("Started up a new game!");
+        Code.reset();
         hideStuff();
-        Elements.forkPaper.disabled = false;
     }
 
     /**
@@ -162,18 +154,19 @@ namespace Buttons {
     export function forkPaper() {
         if (Game.data.forks === 0) {
             showStuff();
-            Elements.forkPaper.disabled = true;
             Game.data.forks++;
-            updateDisplays();
+            updateHTML();
         } else {
             const requirement: number =
                 Game.data.calculateForkPaperRequirement();
-            if (Game.data.forks >= requirement) {
+            if (Game.data.linesOfCode >= requirement) {
                 Game.data.linesOfCode = 0;
                 Game.data.developerFriends = 0;
                 Game.data.developerSkillLevel = 0;
+                Game.data.friendUpgrades = 0;
                 Game.data.forks++;
-                updateDisplays();
+                Code.reset();
+                updateHTML();
             }
         }
     }
@@ -184,7 +177,7 @@ namespace Buttons {
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.developerSkillLevel++;
-            updateDisplays();
+            updateHTML();
         }
     }
 
@@ -193,7 +186,7 @@ namespace Buttons {
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.developerFriends++;
-            updateDisplays();
+            updateHTML();
         }
     }
 
@@ -202,7 +195,7 @@ namespace Buttons {
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.friendUpgrades++;
-            updateDisplays();
+            updateHTML();
         }
     }
 }
@@ -211,10 +204,12 @@ function gameLoop() {
     if (Game.data.calculateFriendCodePerSecond() >= 1) {
         Code.type(Game.data.calculateFriendCodePerSecond());
     }
-    updateDisplays();
+    updateHTML();
 }
 
-function updateDisplays() {
+function updateHTML() {
+    Elements.forkPaper.disabled = !Game.data.canForkPaper();
+
     Elements.linesOfCode.innerHTML =
         Game.data.linesOfCode + " Lines of Code Written";
     Elements.forks.innerHTML =
@@ -293,7 +288,7 @@ namespace Code {
         // Check if there's a new line in it. (or multiple)
         if (newLines >= 1) {
             Game.data.linesOfCode += newLines;
-            updateDisplays();
+            updateHTML();
         }
 
         Elements.code.innerHTML += newCode;
@@ -302,13 +297,15 @@ namespace Code {
         Elements.codeArea.scrollTop = Elements.codeArea.scrollHeight;
     }
 
+    export function reset(): void {
+        index = 0;
+        Elements.code.innerHTML = "";
+    }
+
     export function fetchSource(): void {
         fetch(randomFromArray(sourceLinks))
             .then((newSource) => newSource.text())
             .then((newSource) => {
-                index = 0;
-                Elements.code.innerHTML = "";
-
                 // Get rid of icky import and package statements.
                 newSource = newSource.replaceAll(
                     /^(import|package).*\n/gim,
@@ -317,6 +314,8 @@ namespace Code {
 
                 // Remove empty lines at the start.
                 source = newSource.replaceAll(/^\n*/gi, "");
+
+                reset();
             });
     }
 
@@ -357,7 +356,7 @@ function onLoad() {
         hideStuff();
     }
 
-    updateDisplays();
+    updateHTML();
 
     Elements.loadingScreen.style.visibility = "hidden";
 }

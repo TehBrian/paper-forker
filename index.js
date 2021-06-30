@@ -32,12 +32,6 @@ var Elements;
     Elements.code = getById("code");
     Elements.cursor = getById("cursor");
 })(Elements || (Elements = {}));
-var Constants;
-(function (Constants) {
-    Constants.upgradeDeveloperSkillLevelBaseCost = 10;
-    Constants.getDeveloperFriendBaseCost = 300;
-    Constants.upgradeFriendsBaseCost = 650;
-})(Constants || (Constants = {}));
 var GameData = /** @class */ (function () {
     function GameData(linesOfCode, forks, developerSkillLevel, developerFriends, friendUpgrades) {
         this.linesOfCode = linesOfCode;
@@ -47,22 +41,25 @@ var GameData = /** @class */ (function () {
         this.friendUpgrades = friendUpgrades;
     }
     GameData.prototype.calculateUpgradeDeveloperSkillLevelCost = function () {
-        return (Constants.upgradeDeveloperSkillLevelBaseCost +
-            Math.floor(Math.pow(this.developerSkillLevel, 2)));
+        return 10 + Math.floor(Math.pow(this.developerSkillLevel, 2));
     };
     GameData.prototype.calculateGetDeveloperFriendCost = function () {
-        return (Constants.getDeveloperFriendBaseCost +
-            Math.floor(Math.pow(this.developerFriends, 2.5)));
+        return 300 + Math.floor(Math.pow(this.developerFriends, 2.5));
     };
     GameData.prototype.calculateUpgradeFriendsCost = function () {
-        return (Constants.upgradeFriendsBaseCost +
-            Math.floor(Math.pow(this.friendUpgrades, 3)));
+        return 650 + Math.floor(Math.pow(this.friendUpgrades, 3));
     };
     GameData.prototype.calculateFriendCodePerSecond = function () {
         return Math.floor(Math.pow((this.friendUpgrades + 1), 1.5) * this.developerFriends);
     };
     GameData.prototype.calculateForkPaperRequirement = function () {
         return 10000;
+    };
+    GameData.prototype.canForkPaper = function () {
+        if (this.forks === 0) {
+            return true;
+        }
+        return this.linesOfCode >= this.calculateForkPaperRequirement();
     };
     return GameData;
 }());
@@ -77,8 +74,8 @@ var Game;
         Game.data = new GameData(0, 0, 0, 0, 0);
         save();
         console.log("Started up a new game!");
+        Code.reset();
         hideStuff();
-        Elements.forkPaper.disabled = false;
     }
     Game.reset = reset;
     /**
@@ -122,18 +119,19 @@ var Buttons;
     function forkPaper() {
         if (Game.data.forks === 0) {
             showStuff();
-            Elements.forkPaper.disabled = true;
             Game.data.forks++;
-            updateDisplays();
+            updateHTML();
         }
         else {
             var requirement = Game.data.calculateForkPaperRequirement();
-            if (Game.data.forks >= requirement) {
+            if (Game.data.linesOfCode >= requirement) {
                 Game.data.linesOfCode = 0;
                 Game.data.developerFriends = 0;
                 Game.data.developerSkillLevel = 0;
+                Game.data.friendUpgrades = 0;
                 Game.data.forks++;
-                updateDisplays();
+                Code.reset();
+                updateHTML();
             }
         }
     }
@@ -143,7 +141,7 @@ var Buttons;
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.developerSkillLevel++;
-            updateDisplays();
+            updateHTML();
         }
     }
     Buttons.upgradeDeveloperSkillLevel = upgradeDeveloperSkillLevel;
@@ -152,7 +150,7 @@ var Buttons;
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.developerFriends++;
-            updateDisplays();
+            updateHTML();
         }
     }
     Buttons.getDeveloperFriend = getDeveloperFriend;
@@ -161,7 +159,7 @@ var Buttons;
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.friendUpgrades++;
-            updateDisplays();
+            updateHTML();
         }
     }
     Buttons.upgradeFriends = upgradeFriends;
@@ -170,9 +168,10 @@ function gameLoop() {
     if (Game.data.calculateFriendCodePerSecond() >= 1) {
         Code.type(Game.data.calculateFriendCodePerSecond());
     }
-    updateDisplays();
+    updateHTML();
 }
-function updateDisplays() {
+function updateHTML() {
+    Elements.forkPaper.disabled = !Game.data.canForkPaper();
     Elements.linesOfCode.innerHTML =
         Game.data.linesOfCode + " Lines of Code Written";
     Elements.forks.innerHTML =
@@ -244,7 +243,7 @@ var Code;
         // Check if there's a new line in it. (or multiple)
         if (newLines >= 1) {
             Game.data.linesOfCode += newLines;
-            updateDisplays();
+            updateHTML();
         }
         Elements.code.innerHTML += newCode;
         index += speed;
@@ -252,16 +251,20 @@ var Code;
         Elements.codeArea.scrollTop = Elements.codeArea.scrollHeight;
     }
     Code.type = type;
+    function reset() {
+        index = 0;
+        Elements.code.innerHTML = "";
+    }
+    Code.reset = reset;
     function fetchSource() {
         fetch(randomFromArray(sourceLinks))
             .then(function (newSource) { return newSource.text(); })
             .then(function (newSource) {
-            index = 0;
-            Elements.code.innerHTML = "";
             // Get rid of icky import and package statements.
             newSource = newSource.replaceAll(/^(import|package).*\n/gim, "");
             // Remove empty lines at the start.
             source = newSource.replaceAll(/^\n*/gi, "");
+            reset();
         });
     }
     Code.fetchSource = fetchSource;
@@ -290,7 +293,7 @@ function onLoad() {
     else {
         hideStuff();
     }
-    updateDisplays();
+    updateHTML();
     Elements.loadingScreen.style.visibility = "hidden";
 }
 function hideStuff() {
