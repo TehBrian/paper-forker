@@ -71,7 +71,7 @@ class GameData {
     }
 
     calculateUpgradeFriendsCost(): number {
-        return 350 + Math.floor(this.friendUpgrades ** 2.5);
+        return 260 + Math.floor(this.friendUpgrades ** 2.5);
     }
 
     calculateFriendCodePerSecond(): number {
@@ -81,7 +81,7 @@ class GameData {
     }
 
     calculateForkPaperRequirement(): number {
-        return 10000;
+        return 1700;
     }
 
     canForkPaper(): boolean {

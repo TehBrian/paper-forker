@@ -44,16 +44,16 @@ var GameData = /** @class */ (function () {
         return 10 + Math.floor(Math.pow(this.developerSkillLevel, 2));
     };
     GameData.prototype.calculateGetDeveloperFriendCost = function () {
-        return 120 + Math.floor(Math.pow(this.developerFriends, 2.5));
+        return 120 + Math.floor(Math.pow(this.developerFriends, 2.2));
     };
     GameData.prototype.calculateUpgradeFriendsCost = function () {
-        return 350 + Math.floor(Math.pow(this.friendUpgrades, 3));
+        return 260 + Math.floor(Math.pow(this.friendUpgrades, 2.5));
     };
     GameData.prototype.calculateFriendCodePerSecond = function () {
-        return Math.floor(Math.pow((this.friendUpgrades + 1), 1.5) * this.developerFriends);
+        return Math.floor(Math.pow((this.friendUpgrades + 1), 1.7) * this.developerFriends);
     };
     GameData.prototype.calculateForkPaperRequirement = function () {
-        return 10000;
+        return 1700;
     };
     GameData.prototype.canForkPaper = function () {
         if (this.forks === 0) {
