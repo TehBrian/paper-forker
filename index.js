@@ -41,13 +41,13 @@ var GameData = /** @class */ (function () {
         this.friendUpgrades = friendUpgrades;
     }
     GameData.prototype.calculateUpgradeDeveloperSkillLevelCost = function () {
-        return 10 + Math.floor(Math.pow(this.developerSkillLevel, 2));
+        return 10 + Math.floor(Math.pow(this.developerSkillLevel, 1.6));
     };
     GameData.prototype.calculateGetDeveloperFriendCost = function () {
-        return 80 + Math.floor(Math.pow(this.developerFriends, 2.2));
+        return 80 + Math.floor(Math.pow(this.developerFriends, 1.9));
     };
     GameData.prototype.calculateUpgradeFriendsCost = function () {
-        return 160 + Math.floor(Math.pow(this.friendUpgrades, 2.5));
+        return 160 + Math.floor(Math.pow(this.friendUpgrades, 2.2));
     };
     GameData.prototype.calculateFriendCodePerSecond = function () {
         return Math.floor(Math.pow((this.friendUpgrades + 1), 2) * this.developerFriends);

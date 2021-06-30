@@ -63,15 +63,15 @@ class GameData {
     }
 
     calculateUpgradeDeveloperSkillLevelCost(): number {
-        return 10 + Math.floor(this.developerSkillLevel ** 2);
+        return 10 + Math.floor(this.developerSkillLevel ** 1.6);
     }
 
     calculateGetDeveloperFriendCost(): number {
-        return 80 + Math.floor(this.developerFriends ** 2.2);
+        return 80 + Math.floor(this.developerFriends ** 1.9);
     }
 
     calculateUpgradeFriendsCost(): number {
-        return 160 + Math.floor(this.friendUpgrades ** 2.5);
+        return 160 + Math.floor(this.friendUpgrades ** 2.2);
     }
 
     calculateFriendCodePerSecond(): number {
