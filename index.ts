@@ -98,7 +98,7 @@ namespace Game {
      */
     export function save(): void {
         localStorage.setItem(itemName, JSON.stringify(data));
-        console.log("Saved GameData to local storage.")
+        console.log("Saved GameData to local storage.");
     }
 
     /**
@@ -138,7 +138,7 @@ namespace Game {
 function forkPaper() {}
 
 function writeCode() {
-    gameData.linesOfCode += gameData.developerSkillLevel + 1;
+    Game.data.linesOfCode += Game.data.developerSkillLevel + 1;
     updateDisplays();
 }
 
@@ -147,71 +147,71 @@ function finishFork() {
 }
 
 function upgradeDeveloperSkillLevel() {
-    const cost: number = gameData.calculateUpgradeDeveloperSkillLevelCost();
-    if (gameData.linesOfCode >= cost) {
-        gameData.linesOfCode -= cost;
-        gameData.developerSkillLevel += 1;
+    const cost: number = Game.data.calculateUpgradeDeveloperSkillLevelCost();
+    if (Game.data.linesOfCode >= cost) {
+        Game.data.linesOfCode -= cost;
+        Game.data.developerSkillLevel += 1;
         updateDisplays();
     }
 }
 
 function getDeveloperFriend() {
-    const cost: number = gameData.calculateGetDeveloperFriendCost();
-    if (gameData.linesOfCode >= cost) {
-        gameData.linesOfCode -= cost;
-        gameData.developerFriends += 1;
+    const cost: number = Game.data.calculateGetDeveloperFriendCost();
+    if (Game.data.linesOfCode >= cost) {
+        Game.data.linesOfCode -= cost;
+        Game.data.developerFriends += 1;
         updateDisplays();
     }
 }
 
 function upgradeFriends() {
-    const cost: number = gameData.calculateUpgradeFriendsCost();
-    if (gameData.linesOfCode >= cost) {
-        gameData.linesOfCode -= cost;
-        gameData.friendUpgrades += 1;
+    const cost: number = Game.data.calculateUpgradeFriendsCost();
+    if (Game.data.linesOfCode >= cost) {
+        Game.data.linesOfCode -= cost;
+        Game.data.friendUpgrades += 1;
         updateDisplays();
     }
 }
 
 function gameLoop() {
-    gameData.linesOfCode += gameData.calculateLinesOfCodePerSecond();
+    Game.data.linesOfCode += Game.data.calculateLinesOfCodePerSecond();
     updateDisplays();
 }
 
 function updateDisplays() {
     Elements.linesOfCode.innerHTML =
-        gameData.linesOfCode + " Lines of Code Written";
+        Game.data.linesOfCode + " Lines of Code Written";
     Elements.forksCompleted.innerHTML =
-        gameData.forksCompleted + " Forks Completed";
+        Game.data.forksCompleted + " Forks Completed";
     Elements.friendProduction.innerHTML =
         "Your friends are currently producing " +
-        gameData.calculateLinesOfCodePerSecond() +
+        Game.data.calculateLinesOfCodePerSecond() +
         " LoC/s";
 
     Elements.upgradeDeveloperSkillLevelButton.innerHTML =
         "Upgrade Developer Skill Level (Currently Level " +
-        gameData.developerSkillLevel +
+        Game.data.developerSkillLevel +
         ") Cost: " +
-        gameData.calculateUpgradeDeveloperSkillLevelCost() +
+        Game.data.calculateUpgradeDeveloperSkillLevelCost() +
         " LoC";
     Elements.getDeveloperFriendButton.innerHTML =
         "Get Developer Friend (Currently Have " +
-        gameData.developerFriends +
+        Game.data.developerFriends +
         ") Cost: " +
-        gameData.calculateGetDeveloperFriendCost() +
+        Game.data.calculateGetDeveloperFriendCost() +
         " LoC";
     Elements.upgradeFriendsButton.innerHTML =
         "Upgrade Friends (Currently Level " +
-        gameData.friendUpgrades +
+        Game.data.friendUpgrades +
         ") Cost: " +
-        gameData.calculateUpgradeFriendsCost() +
+        Game.data.calculateUpgradeFriendsCost() +
         " LoC";
 }
 
 function onLoad() {
-   Game.loadOrReset();
+    Game.loadOrReset();
 
-    window.setInterval(Game.save, 1000);
+    window.setInterval(Game.save, 2000);
     window.setInterval(gameLoop, 1000);
 
     Elements.forkPaperButton.addEventListener("click", forkPaper);
