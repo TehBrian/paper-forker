@@ -257,6 +257,8 @@ namespace Code {
         "https://raw.githubusercontent.com/Hexaoxide/Carbon/rewrite/bukkit/src/main/java/net/draycia/carbon/bukkit/CarbonChatBukkit.java",
         "https://raw.githubusercontent.com/Hexaoxide/Carbon/rewrite/bukkit/src/main/java/net/draycia/carbon/bukkit/listeners/BukkitChatListener.java",
         "https://raw.githubusercontent.com/ItsTehBrian/RestrictionHelper/main/restrictionhelper-core/src/main/java/xyz/tehbrian/restrictionhelper/core/RestrictionLoader.java",
+        "https://raw.githubusercontent.com/HangarMC/Hangar/master/src/main/java/io/papermc/hangar/service/internal/versions/VersionFactory.java",
+        "https://raw.githubusercontent.com/monkegame/monkeOneTap/main/src/main/java/online/monkegame/monkebotplugin2/plugin Class.java",
     ];
 
     let source: string;
@@ -306,6 +308,12 @@ namespace Code {
         fetch(randomFromArray(sourceLinks))
             .then((newSource) => newSource.text())
             .then((newSource) => {
+                // Remove awful \r and \r\n.
+                newSource = newSource.replaceAll(/(\r|\r\n)/gim, "");
+
+                // Replace triple or more \n with just two \n.
+                newSource = newSource.replaceAll(/\n{3,}/gim, "\n\n");
+
                 // Get rid of icky import and package statements.
                 newSource = newSource.replaceAll(
                     /^(import|package).*\n/gim,
