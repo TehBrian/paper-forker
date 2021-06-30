@@ -1,5 +1,10 @@
 #!/usr/bin/env node
-
+//
+// HEY!
+// If you're interested in checking out how this works,
+// I recommend that you look at the source directly:
+// https://github.com/ItsTehBrian/paper-forker
+//
 "use strict";
 
 namespace Elements {
