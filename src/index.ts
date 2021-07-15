@@ -248,7 +248,7 @@ namespace Code {
         return array[Math.floor(Math.random() * array.length)];
     }
 
-    function countNewLines(str): number {
+    function countNewLines(str: string): number {
         const re = /\n/g;
         return ((str || "").match(re) || []).length;
     }
