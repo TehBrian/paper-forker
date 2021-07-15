@@ -50,12 +50,6 @@ var View;
         Elements.upgradeHeader,
         Elements.statsHeader,
     ];
-    const upgradeElements = [
-        Elements.upgradeFriends,
-        Elements.getDeveloperFriend,
-        Elements.upgradeDeveloperSkillLevel,
-        Elements.forkPaper,
-    ];
     /**
      * Show an array of elements.
      * @param elements the array of elements
@@ -233,15 +227,16 @@ var Game;
 (function (Game) {
     const itemName = "paperForkerSave";
     /**
-     * Sets all GameData back to the game's starting point.
+     * Sets the game back to the its starting point.
      */
     function reset() {
         localStorage.removeItem(itemName);
         Game.data = new GameData(0, 0, 0, 0, 0);
         save();
-        console.log("Started up a new game!");
         CodeArea.reset();
         View.hideMain();
+        View.update();
+        console.log("Started up a new game!");
     }
     Game.reset = reset;
     /**
@@ -280,8 +275,8 @@ var Game;
     }
     Game.loadOrReset = loadOrReset;
 })(Game || (Game = {}));
-var Buttons;
-(function (Buttons) {
+var Button;
+(function (Button) {
     function forkPaper() {
         if (Game.data.forks === 0) {
             View.showMain();
@@ -289,23 +284,23 @@ var Buttons;
         Prestige.forkPaper();
         View.update();
     }
-    Buttons.forkPaper = forkPaper;
+    Button.forkPaper = forkPaper;
     function upgradeDeveloperSkillLevel() {
         Purchase.upgradeDeveloperSkillLevel.purchase();
         View.update();
     }
-    Buttons.upgradeDeveloperSkillLevel = upgradeDeveloperSkillLevel;
+    Button.upgradeDeveloperSkillLevel = upgradeDeveloperSkillLevel;
     function getDeveloperFriend() {
         Purchase.getDeveloperFriend.purchase();
         View.update();
     }
-    Buttons.getDeveloperFriend = getDeveloperFriend;
+    Button.getDeveloperFriend = getDeveloperFriend;
     function upgradeFriends() {
         Purchase.upgradeFriends.purchase();
         View.update();
     }
-    Buttons.upgradeFriends = upgradeFriends;
-})(Buttons || (Buttons = {}));
+    Button.upgradeFriends = upgradeFriends;
+})(Button || (Button = {}));
 var GameLoop;
 (function (GameLoop) {
     function calculateCodePerSecond() {
@@ -406,10 +401,10 @@ function onLoad() {
     CodeArea.fetchSource();
     window.setInterval(CodeArea.toggleCursor, 750);
     Elements.codeArea.addEventListener("keydown", CodeArea.onKey);
-    Elements.forkPaper.addEventListener("click", Buttons.forkPaper);
-    Elements.upgradeDeveloperSkillLevel.addEventListener("click", Buttons.upgradeDeveloperSkillLevel);
-    Elements.getDeveloperFriend.addEventListener("click", Buttons.getDeveloperFriend);
-    Elements.upgradeFriends.addEventListener("click", Buttons.upgradeFriends);
+    Elements.forkPaper.addEventListener("click", Button.forkPaper);
+    Elements.upgradeDeveloperSkillLevel.addEventListener("click", Button.upgradeDeveloperSkillLevel);
+    Elements.getDeveloperFriend.addEventListener("click", Button.getDeveloperFriend);
+    Elements.upgradeFriends.addEventListener("click", Button.upgradeFriends);
     if (Game.data.forks >= 1) {
         View.showMain();
     }

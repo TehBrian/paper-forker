@@ -61,13 +61,6 @@ namespace View {
         Elements.statsHeader,
     ];
 
-    const upgradeElements = [
-        Elements.upgradeFriends,
-        Elements.getDeveloperFriend,
-        Elements.upgradeDeveloperSkillLevel,
-        Elements.forkPaper,
-    ];
-
     /**
      * Show an array of elements.
      * @param elements the array of elements
@@ -268,15 +261,18 @@ namespace Game {
     const itemName: string = "paperForkerSave";
 
     /**
-     * Sets all GameData back to the game's starting point.
+     * Sets the game back to the its starting point.
      */
     export function reset(): void {
         localStorage.removeItem(itemName);
         data = new GameData(0, 0, 0, 0, 0);
         save();
-        console.log("Started up a new game!");
+
         CodeArea.reset();
         View.hideMain();
+        View.update();
+
+        console.log("Started up a new game!");
     }
 
     /**
@@ -321,7 +317,7 @@ namespace Game {
     }
 }
 
-namespace Buttons {
+namespace Button {
     export function forkPaper() {
         if (Game.data.forks === 0) {
             View.showMain();
@@ -460,21 +456,19 @@ function onLoad() {
     window.setInterval(GameLoop.run, 1000);
 
     CodeArea.fetchSource();
-
     window.setInterval(CodeArea.toggleCursor, 750);
     Elements.codeArea.addEventListener("keydown", CodeArea.onKey);
 
-    Elements.forkPaper.addEventListener("click", Buttons.forkPaper);
-
+    Elements.forkPaper.addEventListener("click", Button.forkPaper);
     Elements.upgradeDeveloperSkillLevel.addEventListener(
         "click",
-        Buttons.upgradeDeveloperSkillLevel
+        Button.upgradeDeveloperSkillLevel
     );
     Elements.getDeveloperFriend.addEventListener(
         "click",
-        Buttons.getDeveloperFriend
+        Button.getDeveloperFriend
     );
-    Elements.upgradeFriends.addEventListener("click", Buttons.upgradeFriends);
+    Elements.upgradeFriends.addEventListener("click", Button.upgradeFriends);
 
     if (Game.data.forks >= 1) {
         View.showMain();
