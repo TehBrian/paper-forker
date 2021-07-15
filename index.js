@@ -24,16 +24,16 @@ var Elements;
     Elements.forks = getById("forks");
     Elements.friendProduction = getById("friend-production");
     /* Upgrades */
-    Elements.upgradeDeveloperSkillLevel = getById("upgrade-developer-skill-level");
-    Elements.getDeveloperFriend = getById("get-developer-friend");
+    Elements.upgradeDeveloperSkillLevel = (getById("upgrade-developer-skill-level"));
+    Elements.getDeveloperFriend = (getById("get-developer-friend"));
     Elements.upgradeFriends = getById("upgrade-friends");
     /* Code */
     Elements.codeArea = getById("code-area");
     Elements.code = getById("code");
     Elements.cursor = getById("cursor");
 })(Elements || (Elements = {}));
-var VisibilityController;
-(function (VisibilityController) {
+var View;
+(function (View) {
     /**
      * The main game elements that should be immediately shown.
      */
@@ -49,6 +49,12 @@ var VisibilityController;
         Elements.forks,
         Elements.upgradeHeader,
         Elements.statsHeader,
+    ];
+    const upgradeElements = [
+        Elements.upgradeFriends,
+        Elements.getDeveloperFriend,
+        Elements.upgradeDeveloperSkillLevel,
+        Elements.forkPaper,
     ];
     /**
      * Show an array of elements.
@@ -74,15 +80,66 @@ var VisibilityController;
     function showMain() {
         show(mainElements);
     }
-    VisibilityController.showMain = showMain;
+    View.showMain = showMain;
     /**
-     * Hide the main gane elements.
+     * Hide the main game elements.
      */
     function hideMain() {
         hide(mainElements);
     }
-    VisibilityController.hideMain = hideMain;
-})(VisibilityController || (VisibilityController = {}));
+    View.hideMain = hideMain;
+    function showLoadingScreen() {
+        Elements.loadingScreen.style.visibility = "visible";
+    }
+    View.showLoadingScreen = showLoadingScreen;
+    function hideLoadingScreen() {
+        Elements.loadingScreen.style.visibility = "hidden";
+    }
+    View.hideLoadingScreen = hideLoadingScreen;
+    /**
+     * Updates the view.
+     */
+    function update() {
+        Elements.linesOfCode.innerHTML =
+            Game.data.linesOfCode + " Lines of Code Written";
+        Elements.forks.innerHTML =
+            Game.data.forks + " Paper Fork" + (Game.data.forks > 1 ? "s" : "");
+        Elements.friendProduction.innerHTML =
+            "Your friends are currently mashing their keyboard " +
+                calculateFriendCodePerSecond() +
+                "x per second";
+        Elements.upgradeDeveloperSkillLevel.innerHTML =
+            "Upgrade Developer Skill Level (Currently Level " +
+                Game.data.developerSkillLevel +
+                ") Cost: " +
+                Purchase.upgradeDeveloperSkillLevel.calculateCost() +
+                " LoC";
+        Elements.getDeveloperFriend.innerHTML =
+            "Get Developer Friend (Currently Have " +
+                Game.data.developerFriends +
+                ") Cost: " +
+                Purchase.getDeveloperFriend.calculateCost() +
+                " LoC";
+        Elements.upgradeFriends.innerHTML =
+            "Upgrade Friends (Currently Level " +
+                Game.data.friendUpgrades +
+                ") Cost: " +
+                Purchase.upgradeFriends.calculateCost() +
+                " LoC";
+        Elements.forkText.innerHTML =
+            "After " +
+                Prestige.calculateRequirement() +
+                " lines of code, you can reasonably call this fork finished and begin anew.";
+        Elements.forkPaper.disabled = !Prestige.canForkPaper();
+        Elements.upgradeDeveloperSkillLevel.disabled =
+            !Purchase.upgradeDeveloperSkillLevel.canPurchase();
+        Elements.getDeveloperFriend.disabled =
+            !Purchase.getDeveloperFriend.canPurchase();
+        Elements.upgradeFriends.disabled =
+            !Purchase.upgradeFriends.canPurchase();
+    }
+    View.update = update;
+})(View || (View = {}));
 class GameData {
     linesOfCode;
     forks;
@@ -184,7 +241,7 @@ var Game;
         save();
         console.log("Started up a new game!");
         CodeArea.reset();
-        VisibilityController.hideMain();
+        View.hideMain();
     }
     Game.reset = reset;
     /**
@@ -227,25 +284,25 @@ var Buttons;
 (function (Buttons) {
     function forkPaper() {
         if (Game.data.forks === 0) {
-            VisibilityController.showMain();
+            View.showMain();
         }
         Prestige.forkPaper();
-        updateView();
+        View.update();
     }
     Buttons.forkPaper = forkPaper;
     function upgradeDeveloperSkillLevel() {
         Purchase.upgradeDeveloperSkillLevel.purchase();
-        updateView();
+        View.update();
     }
     Buttons.upgradeDeveloperSkillLevel = upgradeDeveloperSkillLevel;
     function getDeveloperFriend() {
         Purchase.getDeveloperFriend.purchase();
-        updateView();
+        View.update();
     }
     Buttons.getDeveloperFriend = getDeveloperFriend;
     function upgradeFriends() {
         Purchase.upgradeFriends.purchase();
-        updateView();
+        View.update();
     }
     Buttons.upgradeFriends = upgradeFriends;
 })(Buttons || (Buttons = {}));
@@ -256,40 +313,7 @@ function gameLoop() {
     if (calculateFriendCodePerSecond() >= 1) {
         CodeArea.type(calculateFriendCodePerSecond());
     }
-    updateView();
-}
-function updateView() {
-    Elements.forkPaper.disabled = !Prestige.canForkPaper();
-    Elements.linesOfCode.innerHTML =
-        Game.data.linesOfCode + " Lines of Code Written";
-    Elements.forks.innerHTML =
-        Game.data.forks + " Paper Fork" + (Game.data.forks > 1 ? "s" : "");
-    Elements.friendProduction.innerHTML =
-        "Your friends are currently mashing their keyboard " +
-            calculateFriendCodePerSecond() +
-            "x per second";
-    Elements.upgradeDeveloperSkillLevel.innerHTML =
-        "Upgrade Developer Skill Level (Currently Level " +
-            Game.data.developerSkillLevel +
-            ") Cost: " +
-            Purchase.upgradeDeveloperSkillLevel.calculateCost() +
-            " LoC";
-    Elements.getDeveloperFriend.innerHTML =
-        "Get Developer Friend (Currently Have " +
-            Game.data.developerFriends +
-            ") Cost: " +
-            Purchase.getDeveloperFriend.calculateCost() +
-            " LoC";
-    Elements.upgradeFriends.innerHTML =
-        "Upgrade Friends (Currently Level " +
-            Game.data.friendUpgrades +
-            ") Cost: " +
-            Purchase.upgradeFriends.calculateCost() +
-            " LoC";
-    Elements.forkText.innerHTML =
-        "After " +
-            Prestige.calculateRequirement() +
-            " lines of code, you can reasonably call this fork finished and begin anew.";
+    View.update();
 }
 var CodeArea;
 (function (CodeArea) {
@@ -333,7 +357,7 @@ var CodeArea;
         // Check if there's a new line in it. (or multiple)
         if (newLines >= 1) {
             Game.data.linesOfCode += newLines;
-            updateView();
+            View.update();
         }
         Elements.code.innerHTML += newCode;
         index += speed;
@@ -382,13 +406,13 @@ function onLoad() {
     Elements.getDeveloperFriend.addEventListener("click", Buttons.getDeveloperFriend);
     Elements.upgradeFriends.addEventListener("click", Buttons.upgradeFriends);
     if (Game.data.forks >= 1) {
-        VisibilityController.showMain();
+        View.showMain();
     }
     else {
-        VisibilityController.hideMain();
+        View.hideMain();
     }
-    updateView();
-    Elements.loadingScreen.style.visibility = "hidden";
+    View.update();
+    View.hideLoadingScreen();
 }
 onLoad();
 //# sourceMappingURL=index.js.map

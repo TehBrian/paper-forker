@@ -29,11 +29,13 @@ namespace Elements {
     export const friendProduction = getById("friend-production");
 
     /* Upgrades */
-    export const upgradeDeveloperSkillLevel = getById(
-        "upgrade-developer-skill-level"
+    export const upgradeDeveloperSkillLevel = <HTMLButtonElement>(
+        getById("upgrade-developer-skill-level")
     );
-    export const getDeveloperFriend = getById("get-developer-friend");
-    export const upgradeFriends = getById("upgrade-friends");
+    export const getDeveloperFriend = <HTMLButtonElement>(
+        getById("get-developer-friend")
+    );
+    export const upgradeFriends = <HTMLButtonElement>getById("upgrade-friends");
 
     /* Code */
     export const codeArea = getById("code-area");
@@ -41,7 +43,7 @@ namespace Elements {
     export const cursor = getById("cursor");
 }
 
-namespace VisibilityController {
+namespace View {
     /**
      * The main game elements that should be immediately shown.
      */
@@ -57,6 +59,13 @@ namespace VisibilityController {
         Elements.forks,
         Elements.upgradeHeader,
         Elements.statsHeader,
+    ];
+
+    const upgradeElements = [
+        Elements.upgradeFriends,
+        Elements.getDeveloperFriend,
+        Elements.upgradeDeveloperSkillLevel,
+        Elements.forkPaper,
     ];
 
     /**
@@ -87,10 +96,63 @@ namespace VisibilityController {
     }
 
     /**
-     * Hide the main gane elements.
+     * Hide the main game elements.
      */
     export function hideMain() {
         hide(mainElements);
+    }
+
+    export function showLoadingScreen() {
+        Elements.loadingScreen.style.visibility = "visible";
+    }
+
+    export function hideLoadingScreen() {
+        Elements.loadingScreen.style.visibility = "hidden";
+    }
+
+    /**
+     * Updates the view.
+     */
+    export function update() {
+        Elements.linesOfCode.innerHTML =
+            Game.data.linesOfCode + " Lines of Code Written";
+        Elements.forks.innerHTML =
+            Game.data.forks + " Paper Fork" + (Game.data.forks > 1 ? "s" : "");
+        Elements.friendProduction.innerHTML =
+            "Your friends are currently mashing their keyboard " +
+            calculateFriendCodePerSecond() +
+            "x per second";
+
+        Elements.upgradeDeveloperSkillLevel.innerHTML =
+            "Upgrade Developer Skill Level (Currently Level " +
+            Game.data.developerSkillLevel +
+            ") Cost: " +
+            Purchase.upgradeDeveloperSkillLevel.calculateCost() +
+            " LoC";
+        Elements.getDeveloperFriend.innerHTML =
+            "Get Developer Friend (Currently Have " +
+            Game.data.developerFriends +
+            ") Cost: " +
+            Purchase.getDeveloperFriend.calculateCost() +
+            " LoC";
+        Elements.upgradeFriends.innerHTML =
+            "Upgrade Friends (Currently Level " +
+            Game.data.friendUpgrades +
+            ") Cost: " +
+            Purchase.upgradeFriends.calculateCost() +
+            " LoC";
+        Elements.forkText.innerHTML =
+            "After " +
+            Prestige.calculateRequirement() +
+            " lines of code, you can reasonably call this fork finished and begin anew.";
+
+        Elements.forkPaper.disabled = !Prestige.canForkPaper();
+        Elements.upgradeDeveloperSkillLevel.disabled =
+            !Purchase.upgradeDeveloperSkillLevel.canPurchase();
+        Elements.getDeveloperFriend.disabled =
+            !Purchase.getDeveloperFriend.canPurchase();
+        Elements.upgradeFriends.disabled =
+            !Purchase.upgradeFriends.canPurchase();
     }
 }
 
@@ -214,7 +276,7 @@ namespace Game {
         save();
         console.log("Started up a new game!");
         CodeArea.reset();
-        VisibilityController.hideMain();
+        View.hideMain();
     }
 
     /**
@@ -262,25 +324,25 @@ namespace Game {
 namespace Buttons {
     export function forkPaper() {
         if (Game.data.forks === 0) {
-            VisibilityController.showMain();
+            View.showMain();
         }
         Prestige.forkPaper();
-        updateView();
+        View.update();
     }
 
     export function upgradeDeveloperSkillLevel() {
         Purchase.upgradeDeveloperSkillLevel.purchase();
-        updateView();
+        View.update();
     }
 
     export function getDeveloperFriend() {
         Purchase.getDeveloperFriend.purchase();
-        updateView();
+        View.update();
     }
 
     export function upgradeFriends() {
         Purchase.upgradeFriends.purchase();
-        updateView();
+        View.update();
     }
 }
 
@@ -294,43 +356,7 @@ function gameLoop(): void {
     if (calculateFriendCodePerSecond() >= 1) {
         CodeArea.type(calculateFriendCodePerSecond());
     }
-    updateView();
-}
-
-function updateView() {
-    Elements.forkPaper.disabled = !Prestige.canForkPaper();
-
-    Elements.linesOfCode.innerHTML =
-        Game.data.linesOfCode + " Lines of Code Written";
-    Elements.forks.innerHTML =
-        Game.data.forks + " Paper Fork" + (Game.data.forks > 1 ? "s" : "");
-    Elements.friendProduction.innerHTML =
-        "Your friends are currently mashing their keyboard " +
-        calculateFriendCodePerSecond() +
-        "x per second";
-
-    Elements.upgradeDeveloperSkillLevel.innerHTML =
-        "Upgrade Developer Skill Level (Currently Level " +
-        Game.data.developerSkillLevel +
-        ") Cost: " +
-        Purchase.upgradeDeveloperSkillLevel.calculateCost() +
-        " LoC";
-    Elements.getDeveloperFriend.innerHTML =
-        "Get Developer Friend (Currently Have " +
-        Game.data.developerFriends +
-        ") Cost: " +
-        Purchase.getDeveloperFriend.calculateCost() +
-        " LoC";
-    Elements.upgradeFriends.innerHTML =
-        "Upgrade Friends (Currently Level " +
-        Game.data.friendUpgrades +
-        ") Cost: " +
-        Purchase.upgradeFriends.calculateCost() +
-        " LoC";
-    Elements.forkText.innerHTML =
-        "After " +
-        Prestige.calculateRequirement() +
-        " lines of code, you can reasonably call this fork finished and begin anew.";
+    View.update();
 }
 
 namespace CodeArea {
@@ -380,7 +406,7 @@ namespace CodeArea {
         // Check if there's a new line in it. (or multiple)
         if (newLines >= 1) {
             Game.data.linesOfCode += newLines;
-            updateView();
+            View.update();
         }
 
         Elements.code.innerHTML += newCode;
@@ -449,14 +475,13 @@ function onLoad() {
     Elements.upgradeFriends.addEventListener("click", Buttons.upgradeFriends);
 
     if (Game.data.forks >= 1) {
-        VisibilityController.showMain();
+        View.showMain();
     } else {
-        VisibilityController.hideMain();
+        View.hideMain();
     }
 
-    updateView();
-
-    Elements.loadingScreen.style.visibility = "hidden";
+    View.update();
+    View.hideLoadingScreen();
 }
 
 onLoad();
