@@ -81,7 +81,7 @@ class GameData {
     }
 
     calculateForkPaperRequirement(): number {
-        return 2000
+        return 2000 + Math.floor(this.forks ** 1.7);
     }
 
     canForkPaper(): boolean {
