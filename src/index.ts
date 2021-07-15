@@ -120,7 +120,7 @@ namespace View {
             Game.data.forks + " Paper Fork" + (Game.data.forks > 1 ? "s" : "");
         Elements.friendProduction.innerHTML =
             "Your friends are currently mashing their keyboard " +
-            calculateFriendCodePerSecond() +
+            GameLoop.calculateCodePerSecond() +
             "x per second";
 
         Elements.upgradeDeveloperSkillLevel.innerHTML =
@@ -346,17 +346,20 @@ namespace Buttons {
     }
 }
 
-function calculateFriendCodePerSecond(): number {
-    return Math.floor(
-        (Game.data.friendUpgrades + 1) ** 2 * Game.data.developerFriends
-    );
-}
-
-function gameLoop(): void {
-    if (calculateFriendCodePerSecond() >= 1) {
-        CodeArea.type(calculateFriendCodePerSecond());
+namespace GameLoop {
+    export function calculateCodePerSecond(): number {
+        return Math.floor(
+            (Game.data.friendUpgrades + 1) ** 2 * Game.data.developerFriends
+        );
     }
-    View.update();
+
+    export function run(): void {
+        if (this.calculateCodePerSecond() >= 1) {
+            CodeArea.type(calculateCodePerSecond());
+        }
+        View.update();
+        Game.save();
+    }
 }
 
 namespace CodeArea {
@@ -454,8 +457,7 @@ namespace CodeArea {
 function onLoad() {
     Game.loadOrReset();
 
-    window.setInterval(Game.save, 2000);
-    window.setInterval(gameLoop, 1000);
+    window.setInterval(GameLoop.run, 1000);
 
     CodeArea.fetchSource();
 

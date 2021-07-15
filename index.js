@@ -106,7 +106,7 @@ var View;
             Game.data.forks + " Paper Fork" + (Game.data.forks > 1 ? "s" : "");
         Elements.friendProduction.innerHTML =
             "Your friends are currently mashing their keyboard " +
-                calculateFriendCodePerSecond() +
+                GameLoop.calculateCodePerSecond() +
                 "x per second";
         Elements.upgradeDeveloperSkillLevel.innerHTML =
             "Upgrade Developer Skill Level (Currently Level " +
@@ -306,15 +306,21 @@ var Buttons;
     }
     Buttons.upgradeFriends = upgradeFriends;
 })(Buttons || (Buttons = {}));
-function calculateFriendCodePerSecond() {
-    return Math.floor((Game.data.friendUpgrades + 1) ** 2 * Game.data.developerFriends);
-}
-function gameLoop() {
-    if (calculateFriendCodePerSecond() >= 1) {
-        CodeArea.type(calculateFriendCodePerSecond());
+var GameLoop;
+(function (GameLoop) {
+    function calculateCodePerSecond() {
+        return Math.floor((Game.data.friendUpgrades + 1) ** 2 * Game.data.developerFriends);
     }
-    View.update();
-}
+    GameLoop.calculateCodePerSecond = calculateCodePerSecond;
+    function run() {
+        if (this.calculateCodePerSecond() >= 1) {
+            CodeArea.type(calculateCodePerSecond());
+        }
+        View.update();
+        Game.save();
+    }
+    GameLoop.run = run;
+})(GameLoop || (GameLoop = {}));
 var CodeArea;
 (function (CodeArea) {
     function randomFromArray(array) {
@@ -396,8 +402,7 @@ var CodeArea;
 })(CodeArea || (CodeArea = {}));
 function onLoad() {
     Game.loadOrReset();
-    window.setInterval(Game.save, 2000);
-    window.setInterval(gameLoop, 1000);
+    window.setInterval(GameLoop.run, 1000);
     CodeArea.fetchSource();
     window.setInterval(CodeArea.toggleCursor, 750);
     Elements.codeArea.addEventListener("keydown", CodeArea.onKey);
