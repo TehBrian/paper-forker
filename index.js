@@ -53,7 +53,7 @@ var GameData = /** @class */ (function () {
         return Math.floor(Math.pow((this.friendUpgrades + 1), 2) * this.developerFriends);
     };
     GameData.prototype.calculateForkPaperRequirement = function () {
-        return 2000;
+        return 2000 * Math.floor(Math.pow(this.forks, 1.7));
     };
     GameData.prototype.canForkPaper = function () {
         if (this.forks === 0) {
