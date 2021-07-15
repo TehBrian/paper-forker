@@ -350,7 +350,7 @@ namespace GameLoop {
     }
 
     export function run(): void {
-        if (this.calculateCodePerSecond() >= 1) {
+        if (calculateCodePerSecond() >= 1) {
             CodeArea.type(calculateCodePerSecond());
         }
         View.update();
@@ -376,6 +376,7 @@ namespace CodeArea {
         "https://raw.githubusercontent.com/monkegame/monkeOneTap/main/src/main/java/online/monkegame/monkebotplugin2/pluginClass.java",
         "https://raw.githubusercontent.com/monkegame/monkebotJ/main/src/main/java/online/monkegame/monkebot/CommandHandler.java",
         "https://raw.githubusercontent.com/monkegame/monkebotJ/main/src/main/java/online/monkegame/monkebot/VariableStorage.java",
+        "code/meme.java",
     ];
 
     let source: string;
