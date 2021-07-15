@@ -350,7 +350,7 @@ namespace GameLoop {
     }
 
     export function run(): void {
-        if (this.calculateCodePerSecond() >= 1) {
+        if (calculateCodePerSecond() >= 1) {
             CodeArea.type(calculateCodePerSecond());
         }
         View.update();
