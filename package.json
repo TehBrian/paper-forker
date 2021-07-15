@@ -16,12 +16,12 @@
     "source-map": "^0.6.1",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.0.0",
-    "typescript": "^4.3.4",
+    "typescript": "^4.3.5",
     "yn": "^3.1.1"
   },
   "scripts": {
-    "build": "./node_modules/typescript/bin/tsc src/*.ts --outFile ./index.js",
-    "watch": "./node_modules/typescript/bin/tsc -w src/*.ts --outFile ./index.js",
+    "build": "node_modules/typescript/bin/tsc --outFile index.js",
+    "watch": "node_modules/typescript/bin/tsc -w --outFile index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -32,40 +32,44 @@ var Elements;
     Elements.code = getById("code");
     Elements.cursor = getById("cursor");
 })(Elements || (Elements = {}));
-var GameData = /** @class */ (function () {
-    function GameData(linesOfCode, forks, developerSkillLevel, developerFriends, friendUpgrades) {
+class GameData {
+    linesOfCode;
+    forks;
+    developerSkillLevel;
+    developerFriends;
+    friendUpgrades;
+    constructor(linesOfCode, forks, developerSkillLevel, developerFriends, friendUpgrades) {
         this.linesOfCode = linesOfCode;
         this.forks = forks;
         this.developerSkillLevel = developerSkillLevel;
         this.developerFriends = developerFriends;
         this.friendUpgrades = friendUpgrades;
     }
-    GameData.prototype.calculateUpgradeDeveloperSkillLevelCost = function () {
-        return 10 + Math.floor(Math.pow(this.developerSkillLevel, 1.6));
-    };
-    GameData.prototype.calculateGetDeveloperFriendCost = function () {
-        return 80 + Math.floor(Math.pow(this.developerFriends, 1.9));
-    };
-    GameData.prototype.calculateUpgradeFriendsCost = function () {
-        return 160 + Math.floor(Math.pow(this.friendUpgrades, 2.2));
-    };
-    GameData.prototype.calculateFriendCodePerSecond = function () {
-        return Math.floor(Math.pow((this.friendUpgrades + 1), 2) * this.developerFriends);
-    };
-    GameData.prototype.calculateForkPaperRequirement = function () {
-        return 2000 * Math.floor(Math.pow(this.forks, 1.7));
-    };
-    GameData.prototype.canForkPaper = function () {
+    calculateUpgradeDeveloperSkillLevelCost() {
+        return 10 + Math.floor(this.developerSkillLevel ** 1.6);
+    }
+    calculateGetDeveloperFriendCost() {
+        return 80 + Math.floor(this.developerFriends ** 1.9);
+    }
+    calculateUpgradeFriendsCost() {
+        return 160 + Math.floor(this.friendUpgrades ** 2.2);
+    }
+    calculateFriendCodePerSecond() {
+        return Math.floor((this.friendUpgrades + 1) ** 2 * this.developerFriends);
+    }
+    calculateForkPaperRequirement() {
+        return 2000 + Math.floor(this.forks ** 1.7);
+    }
+    canForkPaper() {
         if (this.forks === 0) {
             return true;
         }
         return this.linesOfCode >= this.calculateForkPaperRequirement();
-    };
-    return GameData;
-}());
+    }
+}
 var Game;
 (function (Game) {
-    var itemName = "paperForkerSave";
+    const itemName = "paperForkerSave";
     /**
      * Sets all GameData back to the game's starting point.
      */
@@ -123,7 +127,7 @@ var Buttons;
             updateHTML();
         }
         else {
-            var requirement = Game.data.calculateForkPaperRequirement();
+            const requirement = Game.data.calculateForkPaperRequirement();
             if (Game.data.linesOfCode >= requirement) {
                 Game.data.linesOfCode = 0;
                 Game.data.developerFriends = 0;
@@ -137,7 +141,7 @@ var Buttons;
     }
     Buttons.forkPaper = forkPaper;
     function upgradeDeveloperSkillLevel() {
-        var cost = Game.data.calculateUpgradeDeveloperSkillLevelCost();
+        const cost = Game.data.calculateUpgradeDeveloperSkillLevelCost();
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.developerSkillLevel++;
@@ -146,7 +150,7 @@ var Buttons;
     }
     Buttons.upgradeDeveloperSkillLevel = upgradeDeveloperSkillLevel;
     function getDeveloperFriend() {
-        var cost = Game.data.calculateGetDeveloperFriendCost();
+        const cost = Game.data.calculateGetDeveloperFriendCost();
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.developerFriends++;
@@ -155,7 +159,7 @@ var Buttons;
     }
     Buttons.getDeveloperFriend = getDeveloperFriend;
     function upgradeFriends() {
-        var cost = Game.data.calculateUpgradeFriendsCost();
+        const cost = Game.data.calculateUpgradeFriendsCost();
         if (Game.data.linesOfCode >= cost) {
             Game.data.linesOfCode -= cost;
             Game.data.friendUpgrades++;
@@ -209,19 +213,19 @@ var Code;
         return array[Math.floor(Math.random() * array.length)];
     }
     function countNewLines(str) {
-        var re = /\n/g;
+        const re = /\n/g;
         return ((str || "").match(re) || []).length;
     }
-    var sourceLinks = [
+    const sourceLinks = [
         "https://raw.githubusercontent.com/Hexaoxide/Carbon/rewrite/bukkit/src/main/java/net/draycia/carbon/bukkit/CarbonChatBukkit.java",
         "https://raw.githubusercontent.com/Hexaoxide/Carbon/rewrite/bukkit/src/main/java/net/draycia/carbon/bukkit/listeners/BukkitChatListener.java",
         "https://raw.githubusercontent.com/ItsTehBrian/RestrictionHelper/main/restrictionhelper-core/src/main/java/xyz/tehbrian/restrictionhelper/core/RestrictionLoader.java",
         "https://raw.githubusercontent.com/HangarMC/Hangar/master/src/main/java/io/papermc/hangar/service/internal/versions/VersionFactory.java",
-        "https://raw.githubusercontent.com/monkegame/monkeOneTap/main/src/main/java/online/monkegame/monkebotplugin2/pluginClass.java", //how do you typo copying a link lmao -naomi
+        "https://raw.githubusercontent.com/monkegame/monkeOneTap/main/src/main/java/online/monkegame/monkebotplugin2/plugin Class.java",
     ];
-    var source;
-    var index = 0;
-    var lastKey;
+    let source;
+    let index = 0;
+    let lastKey;
     function onKey(event) {
         if (lastKey !== event.key) {
             lastKey = event.key;
@@ -230,7 +234,7 @@ var Code;
     }
     Code.onKey = onKey;
     function type(speed) {
-        var newCode = source
+        let newCode = source
             .substring(index, index + speed)
             // Shamelessly stolen from hackertyper.net. All credit goes to the creator for this magical little .replace <3
             .replace(/[\u00A0-\u9999<>\&]/gim, function (a) {
@@ -241,7 +245,7 @@ var Code;
             fetchSource();
             return;
         }
-        var newLines = countNewLines(newCode);
+        const newLines = countNewLines(newCode);
         // Check if there's a new line in it. (or multiple)
         if (newLines >= 1) {
             Game.data.linesOfCode += newLines;
@@ -260,8 +264,8 @@ var Code;
     Code.reset = reset;
     function fetchSource() {
         fetch(randomFromArray(sourceLinks))
-            .then(function (newSource) { return newSource.text(); })
-            .then(function (newSource) {
+            .then((newSource) => newSource.text())
+            .then((newSource) => {
             // Remove awful \r and \r\n.
             newSource = newSource.replaceAll(/(\r|\r\n)/gim, "");
             // Replace triple or more \n with just two \n.
@@ -329,3 +333,4 @@ function showStuff() {
     Elements.statsHeader.style.visibility = "visible";
 }
 onLoad();
+//# sourceMappingURL=index.js.map
