@@ -77,7 +77,6 @@ namespace VisibilityController {
         for (var element of elements) {
             element.style.visibility = "hidden";
         }
-        show(mainElements);
     }
 
     /**
@@ -115,35 +114,91 @@ class GameData {
         this.developerFriends = developerFriends;
         this.friendUpgrades = friendUpgrades;
     }
+}
 
-    calculateUpgradeDeveloperSkillLevelCost(): number {
-        return 10 + Math.floor(this.developerSkillLevel ** 1.6);
+namespace Prestige {
+    export function calculateRequirement(): number {
+        return 2000 + Math.floor(Game.data.forks ** 1.7);
     }
 
-    calculateGetDeveloperFriendCost(): number {
-        return 80 + Math.floor(this.developerFriends ** 1.9);
+    export function forkPaper(): void {
+        if (this.canForkPaper()) {
+            Game.data.linesOfCode = 0;
+            Game.data.developerFriends = 0;
+            Game.data.developerSkillLevel = 0;
+            Game.data.friendUpgrades = 0;
+            Game.data.forks++;
+            CodeArea.reset();
+        }
     }
 
-    calculateUpgradeFriendsCost(): number {
-        return 160 + Math.floor(this.friendUpgrades ** 2.2);
-    }
-
-    calculateFriendCodePerSecond(): number {
-        return Math.floor(
-            (this.friendUpgrades + 1) ** 2 * this.developerFriends
-        );
-    }
-
-    calculateForkPaperRequirement(): number {
-        return 2000 + Math.floor(this.forks ** 1.7);
-    }
-
-    canForkPaper(): boolean {
-        if (this.forks === 0) {
+    export function canForkPaper(): boolean {
+        if (Game.data.forks === 0) {
             return true;
         }
-        return this.linesOfCode >= this.calculateForkPaperRequirement();
+        return Game.data.linesOfCode >= this.calculateRequirement();
     }
+}
+
+namespace Purchase {
+    abstract class AbstractPurchase {
+        abstract calculateCost(): number;
+
+        abstract purchase(): void;
+
+        abstract canPurchase(): void;
+    }
+
+    class UpgradeDeveloperSkillLevel extends AbstractPurchase {
+        calculateCost(): number {
+            return 10 + Math.floor(Game.data.developerSkillLevel ** 1.6);
+        }
+        purchase(): void {
+            if (this.canPurchase()) {
+                Game.data.linesOfCode -= this.calculateCost();
+                Game.data.developerSkillLevel++;
+            }
+        }
+        canPurchase(): boolean {
+            return Game.data.linesOfCode >= this.calculateCost();
+        }
+    }
+
+    class GetDeveloperFriend extends AbstractPurchase {
+        calculateCost(): number {
+            return 80 + Math.floor(Game.data.developerFriends ** 1.9);
+        }
+        purchase(): void {
+            if (this.canPurchase()) {
+                Game.data.linesOfCode -= this.calculateCost();
+                Game.data.developerFriends++;
+            }
+        }
+        canPurchase(): boolean {
+            return Game.data.linesOfCode >= this.calculateCost();
+        }
+    }
+
+    class UpgradeFriends extends AbstractPurchase {
+        calculateCost(): number {
+            return 160 + Math.floor(Game.data.friendUpgrades ** 2.2);
+        }
+        purchase(): void {
+            if (this.canPurchase()) {
+                Game.data.linesOfCode -= this.calculateCost();
+                Game.data.friendUpgrades++;
+            }
+        }
+        canPurchase(): boolean {
+            return Game.data.linesOfCode >= this.calculateCost();
+        }
+    }
+
+    export const upgradeDeveloperSkillLevel: UpgradeDeveloperSkillLevel =
+        new UpgradeDeveloperSkillLevel();
+    export const getDeveloperFriend: GetDeveloperFriend =
+        new GetDeveloperFriend();
+    export const upgradeFriends: UpgradeFriends = new UpgradeFriends();
 }
 
 namespace Game {
@@ -158,7 +213,7 @@ namespace Game {
         data = new GameData(0, 0, 0, 0, 0);
         save();
         console.log("Started up a new game!");
-        Code.reset();
+        CodeArea.reset();
         VisibilityController.hideMain();
     }
 
@@ -208,61 +263,42 @@ namespace Buttons {
     export function forkPaper() {
         if (Game.data.forks === 0) {
             VisibilityController.showMain();
-            Game.data.forks++;
-            updateHTML();
-        } else {
-            const requirement: number =
-                Game.data.calculateForkPaperRequirement();
-            if (Game.data.linesOfCode >= requirement) {
-                Game.data.linesOfCode = 0;
-                Game.data.developerFriends = 0;
-                Game.data.developerSkillLevel = 0;
-                Game.data.friendUpgrades = 0;
-                Game.data.forks++;
-                Code.reset();
-                updateHTML();
-            }
         }
+        Prestige.forkPaper();
+        updateView();
     }
 
     export function upgradeDeveloperSkillLevel() {
-        const cost: number =
-            Game.data.calculateUpgradeDeveloperSkillLevelCost();
-        if (Game.data.linesOfCode >= cost) {
-            Game.data.linesOfCode -= cost;
-            Game.data.developerSkillLevel++;
-            updateHTML();
-        }
+        Purchase.upgradeDeveloperSkillLevel.purchase();
+        updateView();
     }
 
     export function getDeveloperFriend() {
-        const cost: number = Game.data.calculateGetDeveloperFriendCost();
-        if (Game.data.linesOfCode >= cost) {
-            Game.data.linesOfCode -= cost;
-            Game.data.developerFriends++;
-            updateHTML();
-        }
+        Purchase.getDeveloperFriend.purchase();
+        updateView();
     }
 
     export function upgradeFriends() {
-        const cost: number = Game.data.calculateUpgradeFriendsCost();
-        if (Game.data.linesOfCode >= cost) {
-            Game.data.linesOfCode -= cost;
-            Game.data.friendUpgrades++;
-            updateHTML();
-        }
+        Purchase.upgradeFriends.purchase();
+        updateView();
     }
 }
 
-function gameLoop() {
-    if (Game.data.calculateFriendCodePerSecond() >= 1) {
-        Code.type(Game.data.calculateFriendCodePerSecond());
-    }
-    updateHTML();
+function calculateFriendCodePerSecond(): number {
+    return Math.floor(
+        (Game.data.friendUpgrades + 1) ** 2 * Game.data.developerFriends
+    );
 }
 
-function updateHTML() {
-    Elements.forkPaper.disabled = !Game.data.canForkPaper();
+function gameLoop(): void {
+    if (calculateFriendCodePerSecond() >= 1) {
+        CodeArea.type(calculateFriendCodePerSecond());
+    }
+    updateView();
+}
+
+function updateView() {
+    Elements.forkPaper.disabled = !Prestige.canForkPaper();
 
     Elements.linesOfCode.innerHTML =
         Game.data.linesOfCode + " Lines of Code Written";
@@ -270,34 +306,34 @@ function updateHTML() {
         Game.data.forks + " Paper Fork" + (Game.data.forks > 1 ? "s" : "");
     Elements.friendProduction.innerHTML =
         "Your friends are currently mashing their keyboard " +
-        Game.data.calculateFriendCodePerSecond() +
+        calculateFriendCodePerSecond() +
         "x per second";
 
     Elements.upgradeDeveloperSkillLevel.innerHTML =
         "Upgrade Developer Skill Level (Currently Level " +
         Game.data.developerSkillLevel +
         ") Cost: " +
-        Game.data.calculateUpgradeDeveloperSkillLevelCost() +
+        Purchase.upgradeDeveloperSkillLevel.calculateCost() +
         " LoC";
     Elements.getDeveloperFriend.innerHTML =
         "Get Developer Friend (Currently Have " +
         Game.data.developerFriends +
         ") Cost: " +
-        Game.data.calculateGetDeveloperFriendCost() +
+        Purchase.getDeveloperFriend.calculateCost() +
         " LoC";
     Elements.upgradeFriends.innerHTML =
         "Upgrade Friends (Currently Level " +
         Game.data.friendUpgrades +
         ") Cost: " +
-        Game.data.calculateUpgradeFriendsCost() +
+        Purchase.upgradeFriends.calculateCost() +
         " LoC";
     Elements.forkText.innerHTML =
         "After " +
-        Game.data.calculateForkPaperRequirement() +
+        Prestige.calculateRequirement() +
         " lines of code, you can reasonably call this fork finished and begin anew.";
 }
 
-namespace Code {
+namespace CodeArea {
     function randomFromArray(array: string | any[]) {
         return array[Math.floor(Math.random() * array.length)];
     }
@@ -344,7 +380,7 @@ namespace Code {
         // Check if there's a new line in it. (or multiple)
         if (newLines >= 1) {
             Game.data.linesOfCode += newLines;
-            updateHTML();
+            updateView();
         }
 
         Elements.code.innerHTML += newCode;
@@ -395,10 +431,10 @@ function onLoad() {
     window.setInterval(Game.save, 2000);
     window.setInterval(gameLoop, 1000);
 
-    Code.fetchSource();
+    CodeArea.fetchSource();
 
-    window.setInterval(Code.toggleCursor, 750);
-    Elements.codeArea.addEventListener("keydown", Code.onKey);
+    window.setInterval(CodeArea.toggleCursor, 750);
+    Elements.codeArea.addEventListener("keydown", CodeArea.onKey);
 
     Elements.forkPaper.addEventListener("click", Buttons.forkPaper);
 
@@ -418,7 +454,7 @@ function onLoad() {
         VisibilityController.hideMain();
     }
 
-    updateHTML();
+    updateView();
 
     Elements.loadingScreen.style.visibility = "hidden";
 }
