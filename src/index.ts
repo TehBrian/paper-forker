@@ -41,6 +41,60 @@ namespace Elements {
     export const cursor = getById("cursor");
 }
 
+namespace VisibilityController {
+    /**
+     * The main game elements that should be immediately shown.
+     */
+    const mainElements = [
+        Elements.forkText,
+        Elements.linesOfCode,
+        Elements.friendProduction,
+        Elements.upgradeFriends,
+        Elements.getDeveloperFriend,
+        Elements.upgradeDeveloperSkillLevel,
+        Elements.code,
+        Elements.codeArea,
+        Elements.forks,
+        Elements.upgradeHeader,
+        Elements.statsHeader,
+    ];
+
+    /**
+     * Show an array of elements.
+     * @param elements the array of elements
+     */
+    function show(elements: HTMLElement[]) {
+        for (var element of elements) {
+            element.style.visibility = "visible";
+        }
+    }
+
+    /**
+     * Hide an array of elements.
+     * @param elements the array of elements
+     */
+    function hide(elements: HTMLElement[]) {
+        for (var element of elements) {
+            element.style.visibility = "hidden";
+        }
+        show(mainElements);
+    }
+
+    /**
+     * Show the main game elements.
+     */
+    export function showMain() {
+        show(mainElements);
+    }
+
+    /**
+     * Hide the main gane elements.
+     */
+    export function hideMain() {
+        hide(mainElements);
+    }
+}
+
 class GameData {
     linesOfCode: number;
     forks: number;
@@ -105,7 +159,7 @@ namespace Game {
         save();
         console.log("Started up a new game!");
         Code.reset();
-        hideStuff();
+        VisibilityController.hideMain();
     }
 
     /**
@@ -153,7 +207,7 @@ namespace Game {
 namespace Buttons {
     export function forkPaper() {
         if (Game.data.forks === 0) {
-            showStuff();
+            VisibilityController.showMain();
             Game.data.forks++;
             updateHTML();
         } else {
@@ -359,42 +413,14 @@ function onLoad() {
     Elements.upgradeFriends.addEventListener("click", Buttons.upgradeFriends);
 
     if (Game.data.forks >= 1) {
-        showStuff();
+        VisibilityController.showMain();
     } else {
-        hideStuff();
+        VisibilityController.hideMain();
     }
 
     updateHTML();
 
     Elements.loadingScreen.style.visibility = "hidden";
-}
-
-function hideStuff() {
-    Elements.forkText.style.visibility = "hidden";
-    Elements.linesOfCode.style.visibility = "hidden";
-    Elements.friendProduction.style.visibility = "hidden";
-    Elements.upgradeFriends.style.visibility = "hidden";
-    Elements.getDeveloperFriend.style.visibility = "hidden";
-    Elements.upgradeDeveloperSkillLevel.style.visibility = "hidden";
-    Elements.code.style.visibility = "hidden";
-    Elements.codeArea.style.visibility = "hidden";
-    Elements.forks.style.visibility = "hidden";
-    Elements.upgradeHeader.style.visibility = "hidden";
-    Elements.statsHeader.style.visibility = "hidden";
-}
-
-function showStuff() {
-    Elements.forkText.style.visibility = "visible";
-    Elements.linesOfCode.style.visibility = "visible";
-    Elements.friendProduction.style.visibility = "visible";
-    Elements.upgradeFriends.style.visibility = "visible";
-    Elements.getDeveloperFriend.style.visibility = "visible";
-    Elements.upgradeDeveloperSkillLevel.style.visibility = "visible";
-    Elements.code.style.visibility = "visible";
-    Elements.codeArea.style.visibility = "visible";
-    Elements.forks.style.visibility = "visible";
-    Elements.upgradeHeader.style.visibility = "visible";
-    Elements.statsHeader.style.visibility = "visible";
 }
 
 onLoad();
