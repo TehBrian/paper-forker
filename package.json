@@ -4,7 +4,7 @@
   "description": "A small incremental to give you the true experience of being a Tuinity dev.",
   "main": "index.js",
   "dependencies": {
-    "arg": "^4.1.3",
+    "arg": "^5.0.0",
     "bignumber.js": "^9.0.1",
     "buffer-from": "^1.1.1",
     "chalk": "^5.0.0",
