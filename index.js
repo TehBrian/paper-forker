@@ -331,6 +331,8 @@ var CodeArea;
         "https://raw.githubusercontent.com/ItsTehBrian/RestrictionHelper/main/restrictionhelper-core/src/main/java/xyz/tehbrian/restrictionhelper/core/RestrictionLoader.java",
         "https://raw.githubusercontent.com/HangarMC/Hangar/master/src/main/java/io/papermc/hangar/service/internal/versions/VersionFactory.java",
         "https://raw.githubusercontent.com/monkegame/monkeOneTap/main/src/main/java/online/monkegame/monkebotplugin2/pluginClass.java",
+        "https://raw.githubusercontent.com/monkegame/monkebotJ/main/src/main/java/online/monkegame/monkebot/CommandHandler.java",
+        "https://raw.githubusercontent.com/monkegame/monkebotJ/main/src/main/java/online/monkegame/monkebot/VariableStorage.java",
         "code/meme.java",
     ];
     let source;
