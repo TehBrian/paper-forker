@@ -26,14 +26,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ItsTehBrian/paper-forker.git"
+    "url": "git+https://github.com/TehBrian/paper-forker.git"
   },
   "author": "TehBrian",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ItsTehBrian/paper-forker/issues"
+    "url": "https://github.com/TehBrian/paper-forker/issues"
   },
-  "homepage": "https://github.com/ItsTehBrian/paper-forker#readme",
+  "homepage": "https://github.com/TehBrian/paper-forker#readme",
   "devDependencies": {
     "@types/node": "16.11.14"
   }

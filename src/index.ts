@@ -3,7 +3,7 @@
 // HEY!
 // If you're interested in checking out how this works,
 // I recommend that you look at the source directly:
-// https://github.com/ItsTehBrian/paper-forker
+// https://github.com/TehBrian/paper-forker
 //
 "use strict";
 
@@ -371,7 +371,7 @@ namespace CodeArea {
     const sourceLinks = [
         "https://raw.githubusercontent.com/Hexaoxide/Carbon/rewrite/bukkit/src/main/java/net/draycia/carbon/bukkit/CarbonChatBukkit.java",
         "https://raw.githubusercontent.com/Hexaoxide/Carbon/rewrite/bukkit/src/main/java/net/draycia/carbon/bukkit/listeners/BukkitChatListener.java",
-        "https://raw.githubusercontent.com/ItsTehBrian/RestrictionHelper/main/restrictionhelper-core/src/main/java/xyz/tehbrian/restrictionhelper/core/RestrictionLoader.java",
+        "https://raw.githubusercontent.com/TehBrian/RestrictionHelper/main/restrictionhelper-core/src/main/java/xyz/tehbrian/restrictionhelper/core/RestrictionLoader.java",
         "https://raw.githubusercontent.com/HangarMC/Hangar/master/src/main/java/io/papermc/hangar/service/internal/versions/VersionFactory.java",
         "https://raw.githubusercontent.com/monkegame/monkeOneTap/main/src/main/java/online/monkegame/monkebotplugin2/pluginClass.java",
         "https://raw.githubusercontent.com/monkegame/monkebotJ/main/src/main/java/online/monkegame/monkebot/CommandHandler.java",
