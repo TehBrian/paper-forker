@@ -135,11 +135,6 @@ var View;
     View.update = update;
 })(View || (View = {}));
 class GameData {
-    linesOfCode;
-    forks;
-    developerSkillLevel;
-    developerFriends;
-    friendUpgrades;
     constructor(linesOfCode, forks, developerSkillLevel, developerFriends, friendUpgrades) {
         this.linesOfCode = linesOfCode;
         this.forks = forks;

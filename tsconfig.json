@@ -1,10 +1,7 @@
 {
     "compilerOptions": {
-        "target": "esnext",
+        "target": "es2021",
         "sourceMap": true,
-        "lib": [
-            "dom",
-            "esnext",
-        ],
+        "lib": ["dom", "es2021"]
     }
 }
