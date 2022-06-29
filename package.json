@@ -35,6 +35,6 @@
   },
   "homepage": "https://github.com/TehBrian/paper-forker#readme",
   "devDependencies": {
-    "@types/node": "16.11.41"
+    "@types/node": "16.11.42"
   }
 }
